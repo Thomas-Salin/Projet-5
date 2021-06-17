@@ -17,4 +17,5 @@ router.put('/:id', auth, multer, sauceController.modifySauce);
 //* route correspondant à la suppression d'une sauce spécifique *//
 router.delete('/:id', auth, sauceController.deleteSauce);
 
+
 module.exports = router;
