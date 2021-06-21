@@ -10,9 +10,9 @@ exports.signup = (req, res, next) => {
     const email = req.body.email;
     const emailMask2Option = {
         maskWith : '*',
-        unmaskedStartCharactersBeforeAt : 0 ,
-        unmaskedEndCharactersAfterAt : 0 ,
-        maskAtTheRate : true 
+        unmaskedStartCharactersBeforeAt : 1 ,
+        unmaskedEndCharactersAfterAt : 1 ,
+        maskAtTheRate : false
     }
     const emailMasked = maskData.maskEmail2(email, emailMask2Option);
         bcrypt.hash(req.body.password, 10)
@@ -32,9 +32,9 @@ exports.signup = (req, res, next) => {
 exports.login =  (req, res, next) => {
     const emailMask2Option = {
         maskWith : '*',
-        unmaskedStartCharactersBeforeAt : 0 ,
-        unmaskedEndCharactersAfterAt : 0 ,
-        maskAtTheRate : true
+        unmaskedStartCharactersBeforeAt : 1 ,
+        unmaskedEndCharactersAfterAt : 1 ,
+        maskAtTheRate : false
     }
     User.findOne({email: maskData.maskEmail2(req.body.email, emailMask2Option)})
         .then(user => {
