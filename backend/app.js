@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const path =require('path');
+const path = require('path');
+const helmet = require('helmet');
+
 
 const sauceRoutes = require('./routes/sauce')
 const userRoutes = require('./routes/user');
@@ -17,6 +19,9 @@ mongoose.connect('mongodb+srv://Thomas:21102019@cluster0.kzh6r.mongodb.net/Clust
 
 //* Middleware correspondant au body-parser afin de récuperer l'objet json de la requete post du frontend *//
 app.use(bodyParser.json());
+
+app.use(helmet());
+
 
 //* Middleware correspondant au CORS *//
 app.use((req, res, next) => {

@@ -3,13 +3,22 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const maskData = require('maskdata');
 
 
-exports.signup = (req, res,next) => {
+exports.signup = (req, res, next) => {
+    const email = req.body.email;
+    const emailMask2Option = {
+        maskWith : '*',
+        unmaskedStartCharactersBeforeAt : 0 ,
+        unmaskedEndCharactersAfterAt : 0 ,
+        maskAtTheRate : true 
+    }
+    const emailMasked = maskData.maskEmail2(email, emailMask2Option);
         bcrypt.hash(req.body.password, 10)
             .then(hash => {
                 const user = new User({
-                    email: req.body.email,
+                    email: emailMasked,
                     password: hash
             })
                 user.save()
@@ -21,7 +30,13 @@ exports.signup = (req, res,next) => {
 };
 
 exports.login =  (req, res, next) => {
-    User.findOne({email: req.body.email})
+    const emailMask2Option = {
+        maskWith : '*',
+        unmaskedStartCharactersBeforeAt : 0 ,
+        unmaskedEndCharactersAfterAt : 0 ,
+        maskAtTheRate : true
+    }
+    User.findOne({email: maskData.maskEmail2(req.body.email, emailMask2Option)})
         .then(user => {
             if(!user){
                 return res.status(401).json({error: 'Utilisateur inconnu'})

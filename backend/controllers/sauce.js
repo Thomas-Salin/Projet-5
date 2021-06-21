@@ -24,51 +24,32 @@ exports.likeSauce = (req, res, next) => {
 
   Sauce.findOne({_id: req.params.id})
     .then(sauce => {
-      message = 'indice userLike : ' + sauce.userLiked.indexOf(userId) + ', indice dislike : ' + sauce.userDisliked.indexOf(userId);
-      if(sauce.userLiked.indexOf(userId) >= 0 || sauce.userDisliked.indexOf(userId) >= 0){
+      if(sauce.usersLiked.indexOf(userId) >= 0 || sauce.usersDisliked.indexOf(userId) >= 0){
         if(like === 0 ) {
-          const posUserLike = sauce.userLiked.indexOf(userId);
-          const posUserDislike = sauce.userDisliked.indexOf(userId);
+          const posUserLike = sauce.usersLiked.indexOf(userId);
+          const posUserDislike = sauce.usersDisliked.indexOf(userId);
           status = '200';
 
           if(posUserLike >= 0){
-            sauce.userLiked.slice(posUserLike, 1);
+            sauce.usersLiked.splice(posUserLike, 1);
             sauce.likes--;
             message = 'Like annulé';
           }
           if(posUserDislike >= 0){
-            sauce.userDisliked.slice(posUserDislike, 1);
+            sauce.usersDisliked.splice(posUserDislike, 1);
             sauce.dislikes--;
             message = 'Dislike annulé';
-          }
-        }else {
-          status = '200';
-          const posUserLike = sauce.userLiked.indexOf(userId);
-          const posUserDislike = sauce.userDisliked.indexOf(userId);
-          if( posUserLike >= 0 && like === -1){
-            sauce.userLiked.slice(posUserLike, 1);
-            sauce.likes--;
-            sauce.userDisliked.push(userId);
-            sauce.dislikes++;
-            message = 'Like supprimé et Dislike ajouté';
-          }
-          if (posUserDislike >= 0 && like === 1){
-            sauce.userDisliked.slice(posUserDislike, 1);
-            sauce.dislikes--;
-            sauce.userLiked.push(userId);
-            sauce.likes++;
-            message = 'Dislike supprimé et Like ajouté';
           }
         }
       }else{
         status = '200';
         if(like === 1){
-          sauce.userLiked.push(userId);
+          sauce.usersLiked.push(userId);
           sauce.likes++;
           message = 'Like ajouté';
 
         }else if(like === -1) {
-          sauce.userDisliked.push(userId);
+          sauce.usersDisliked.push(userId);
           sauce.dislikes++;
           message = 'Dislike ajouté';
         }else{
@@ -76,20 +57,15 @@ exports.likeSauce = (req, res, next) => {
           message ='User sans avis';
         }
       }
-      Sauce.findOneAndUpdate({_id: req.params.id}, sauce)
+      Sauce.updateOne({_id: req.params.id}, sauce)
       .then(() => res.status(status).json({message: message}))
       .catch(error => res.status(500).json({error}));
     })
-
-
-  
-
-  
 };
 
 exports.modifySauce = (req, res, next) => {
     const sauceObject = req.file ?
-    {
+    { 
       ...JSON.parse(req.body.sauce),
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
      } : { ...req.body };
