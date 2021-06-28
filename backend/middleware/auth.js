@@ -6,11 +6,13 @@ module.exports = (req, res, next) => {
         const decodedToken = jwt.verify(token, 'PLATES_CONTINUE_PRIME_LOCKER_MUSIC_COMPANY');
         const userId = decodedToken.userId
         if(req.body.userId && req.body.userId !== userId){
-            return error;
+            throw 'Invalid user ID';
         }else {
             next();
         }
     }catch (error) {
-        return error
+        res.status(401).json({
+            error: new Error('Invalid request')
+        });
     }
 }
